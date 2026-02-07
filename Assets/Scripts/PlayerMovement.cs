@@ -24,25 +24,26 @@ public class PlayerMovement : MonoBehaviour
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z;
-
-        controller.Move(move * speed * Time.deltaTime);
+        Vector3 move = transform.right * x + transform.forward * z * speed;
 
         // Ground check
-        if (controller.isGrounded && yVelocity < 0)
+        if (controller.isGrounded)
         {
-            yVelocity = -20f; // keeps player grounded
-        }
+            if (yVelocity < 0)
+                yVelocity = -2f;  // small negative force to keep grounded
 
-        // Jump
-        if (controller.isGrounded && Input.GetButtonDown("Jump"))
-        {
-            yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            if (Input.GetButtonDown("Jump"))
+                yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
         // Apply gravity
         yVelocity += gravity * Time.deltaTime;
-        controller.Move(new Vector3(0, yVelocity, 0) * Time.deltaTime);
+
+        // Combine movement
+        move.y = yVelocity;
+
+        // Single move call
+        controller.Move(move * Time.deltaTime);
     }
 
     void Look()
