@@ -9,8 +9,14 @@ public class PlayerMovement : MonoBehaviour
     public float gravity = -9.81f;
     public float mouseSensitivity = 100f;
 
+    public Transform groundCheck;     // NEW
+    public float groundDistance = 0.4f;
+    public LayerMask groundMask;
+
     float yVelocity;
     float yRotation;
+
+    bool isGrounded;
 
     void Update()
     {
@@ -20,29 +26,28 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        // Movement (WASD)
+        // Ground Check (better than controller.isGrounded)
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+
+        if (isGrounded && yVelocity < 0)
+            yVelocity = -2f;
+
+        // Movement
         float x = Input.GetAxis("Horizontal");
         float z = Input.GetAxis("Vertical");
 
-        Vector3 move = transform.right * x + transform.forward * z * speed;
+        Vector3 move = (transform.right * x + transform.forward * z) * speed;
 
-        // Ground check
-        if (controller.isGrounded)
+        // Jump
+        if (isGrounded && Input.GetButtonDown("Jump"))
         {
-            if (yVelocity < 0)
-                yVelocity = -2f;  // small negative force to keep grounded
-
-            if (Input.GetButtonDown("Jump"))
-                yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+            yVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
 
-        // Apply gravity
+        // Gravity
         yVelocity += gravity * Time.deltaTime;
-
-        // Combine movement
         move.y = yVelocity;
 
-        // Single move call
         controller.Move(move * Time.deltaTime);
     }
 

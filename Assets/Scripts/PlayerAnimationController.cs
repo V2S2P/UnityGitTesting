@@ -28,9 +28,34 @@ public class PlayerBehaviour : MonoBehaviour
         {
             playerAnimator.SetTrigger("ElbowPunch");
         }
+
         if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (Input.GetKey(KeyCode.LeftShift))
             {
-            playerAnimator.SetTrigger("JumpFromGround");
+                playerAnimator.SetTrigger("RunningJump");
+            }
+            else
+            {
+                playerAnimator.SetTrigger("StandingJump");
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+            {
+            playerAnimator.SetBool("Running", true);
+            }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+            {
+            playerAnimator.SetBool("Running", false);
+            }
+        if (Input.GetKeyDown(KeyCode.W))
+            {
+            playerAnimator.SetBool("isWalking", true);
+            }
+        if (Input.GetKeyUp(KeyCode.W))
+            {
+            playerAnimator.SetBool("isWalking", false);
             }
     }
 }
